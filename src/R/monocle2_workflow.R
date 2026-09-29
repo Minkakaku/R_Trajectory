@@ -1,3 +1,5 @@
+# 公共入口可被项目 workflow 调用，也可直接作为 CLI 运行。
+main <- function(cli_args = commandArgs(trailingOnly = TRUE)) {
 # rm(list = ls())
 suppressPackageStartupMessages({
   library(monocle)
@@ -99,7 +101,7 @@ command = matrix(c(
   'root_group','G',2,'character',
   'object_dir','O',2,'character'
 ), byrow=TRUE, ncol=4)
-args = getopt(command)
+args = getopt(command, opt = cli_args)
 
 # 功能：按 cluster 分层下采样，避免大群体完全主导轨迹（函数：sample_cells_per_cluster）。
 sample_cells_per_cluster <- function(seurat_object, colnames='leiden', num_cells=1000) {
@@ -150,7 +152,8 @@ dir.create(outpath, recursive = TRUE, showWarnings = FALSE)
 dir.create(object_dir, recursive = TRUE, showWarnings = FALSE)
 outpath <- normalizePath(outpath, winslash = '/', mustWork = FALSE)
 object_dir <- normalizePath(object_dir, winslash = '/', mustWork = FALSE)
-setwd(outpath)
+previous_dir <- setwd(outpath)
+on.exit(setwd(previous_dir), add = TRUE)
 
 if (downcluster) {
   if (!is.null(args$maxcells)) { maxcell = args$maxcells } else { maxcell = 1000 }
@@ -284,3 +287,6 @@ writeLines(result_note, 'README_results_CN.md')
 capture.output(sessionInfo(), file = 'sessionInfo.txt')
 message('Monocle2 results: ', outpath)
 message('Monocle2 object: ', object_path)
+
+}
+if (sys.nframe() == 0L) main()

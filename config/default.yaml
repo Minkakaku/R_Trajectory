@@ -1,0 +1,9 @@
+methods:
+  monocle2:
+    root_col: cell_type
+  monocle3:
+    root-col: cell_type
+  slingshot:
+    cluster-col: cell_type
+  tradeseq:
+    input-type: seurat

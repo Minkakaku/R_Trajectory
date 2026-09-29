@@ -1,3 +1,5 @@
+# 公共入口可被项目 workflow 调用，也可直接作为 CLI 运行。
+main <- function(cli_args = commandArgs(trailingOnly = TRUE)) {
 #!/usr/bin/env Rscript
 
 # tradeSeq 独立轨迹差异分析入口
@@ -13,9 +15,9 @@ suppressPackageStartupMessages({
 
 # 功能：读取 --name value 形式的命令行参数。
 arg_value <- function(name, default = NULL) {
-  args <- commandArgs(trailingOnly = TRUE)
-  index <- match(name, args)
-  if (is.na(index) || index == length(args)) default else args[[index + 1L]]
+  args <- cli_args
+  index <- tail(which(args == name), 1L)
+  if (!length(index) || index == length(args)) default else args[[index + 1L]]
 }
 
 # 功能：把 ggplot 同时保存为 PDF 和 600 dpi PNG。
@@ -117,8 +119,8 @@ run_tradeseq <- function(
     save_plot(plot, file.path(output_dir, paste0("smoother_", make.names(gene))))
   }
 
-  saveRDS(sce, file.path(output_dir, "slingshot_sce.rds"))
-  saveRDS(gam, file.path(output_dir, "tradeseq_gam.rds"))
+  saveRDS(sce, file.path(object_dir, "slingshot_sce.rds"))
+  saveRDS(gam, file.path(object_dir, "tradeseq_gam.rds"))
   writeLines(c(
     "# tradeSeq 轨迹差异表达结果",
     "",
@@ -136,6 +138,8 @@ run_tradeseq <- function(
 
 input_rds <- arg_value("--input")
 output_dir <- arg_value("--output")
+object_dir <- arg_value("--object-dir", file.path("data/processed", "tradeseq"))
+dir.create(object_dir, recursive = TRUE, showWarnings = FALSE)
 if (is.null(input_rds) || is.null(output_dir)) {
   stop("用法：Rscript tradeseq_workflow.R --input annotated.rds --output results/tradeseq --input-type seurat --start-cluster RootCellType")
 }
@@ -151,3 +155,6 @@ run_tradeseq(
   workers = as.integer(arg_value("--workers", "4")),
   top_genes = as.integer(arg_value("--top-genes", "6"))
 )
+
+}
+if (sys.nframe() == 0L) main()

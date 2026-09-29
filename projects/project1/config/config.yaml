@@ -1,0 +1,21 @@
+methods:
+  monocle2:
+    rds: data/processed/annotated.rds
+    root_group: Progenitor
+    output: results/10_monocle2
+    object_dir: data/processed/10_monocle2
+  monocle3:
+    input: data/processed/annotated.rds
+    root-groups: Progenitor
+    output: results/11_monocle3
+    object-dir: data/processed/monocle3
+  slingshot:
+    input: data/processed/annotated.rds
+    start-cluster: Progenitor
+    output: results/12_slingshot
+    object-dir: data/processed/slingshot
+  tradeseq:
+    input: data/processed/annotated.rds
+    start-cluster: Progenitor
+    output: results/13_tradeseq
+    object-dir: data/processed/tradeseq

@@ -1,3 +1,5 @@
+# 公共入口可被项目 workflow 调用，也可直接作为 CLI 运行。
+main <- function(cli_args = commandArgs(trailingOnly = TRUE)) {
 # Slingshot 独立轨迹入口：使用主 Seurat RDS 的低维坐标和生物学注释拟合 lineage。
 suppressPackageStartupMessages({
   library(Seurat)
@@ -7,9 +9,9 @@ suppressPackageStartupMessages({
 
 # 功能：读取 --name value 形式的命令行参数。
 arg_value <- function(name, default = NULL) {
-  args <- commandArgs(trailingOnly = TRUE)
-  index <- match(name, args)
-  if (is.na(index) || index == length(args)) default else args[[index + 1L]]
+  args <- cli_args
+  index <- tail(which(args == name), 1L)
+  if (!length(index) || index == length(args)) default else args[[index + 1L]]
 }
 
 input_rds <- arg_value("--input")
@@ -109,3 +111,6 @@ writeLines(c(
   "- 起始 cluster 必须由已知生物学起点指定；lineage 和 pseudotime 是低维结构的计算推断。"
 ), file.path(output_dir, "README_results_CN.md"))
 capture.output(sessionInfo(), file = file.path(output_dir, "sessionInfo.txt"))
+
+}
+if (sys.nframe() == 0L) main()
