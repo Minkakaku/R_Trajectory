@@ -2,6 +2,8 @@
 
 跨项目复用的 R 公共分析代码库。仓库管理公共方法、默认配置、环境和项目示例；实际项目在 `projects/<项目名>/` 使用这些方法，数据和运行产物不提交 Git。
 
+`src/R/trajectory_plot.R` 从实际项目提取 `plot_existing_trajectory()` 与 `add_trajectory_graph()`。输入已拟合的 `result$cells`（x/y 与状态或 pseudotime 列）和 `result$segments`，复用既有坐标、原生路径和 lineage，缺失 pseudotime 以灰色显示并保留全部细胞；不重新拟合轨迹。默认 NPG 配色，可显式传入 palette。检查：`Rscript --vanilla tests/test_trajectory_plot.R`。
+
 本仓库由 `R-Python-trajectory-workflow-template` 按语言拆分；另一语言版本见 [Python_Trajectory](https://github.com/Minkakaku/Python_Trajectory)。保留拆分前提交历史；`legacy/` 和 `source_catalog/` 是原样来源档案，可能包含另一语言，不参与正式执行。
 
 ## 目录
